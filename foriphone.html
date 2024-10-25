@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Recettes Saveurs">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
+    <title>Recettes Saveurs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-category {
+            font-size: 1.1em;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 8px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+        }
+
+        .btn-category:hover {
+            background-color: #88853e;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .file-list {
+            margin-top: 20px;
+            padding: 0;
+            text-align: center;
+        }
+
+        .file-list li {
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            list-style: none;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .file-list li:hover {
+            background-color: #e2e6ea;
+        }
+
+        #resultCount {
+            margin-top: 20px;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        @media (max-width: 576px) {
+            .btn-category {
+                font-size: 1em;
+                padding: 8px 12px;
+            }
+
+            input[type="text"],
+            select {
+                font-size: 1em;
+            }
+
+            .file-list li {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Recettes Saveurs</h1>
+
+    <!-- Filtres par catégorie -->
+    <div class="text-center mb-3">
+        <button class="btn btn-category" data-type="Entrées">Entrées</button>
+        <button class="btn btn-category" data-type="Plats">Plats</button>
+        <button class="btn btn-category" data-type="Desserts">Desserts</button>
+        <button class="btn btn-category" data-type="all">Tous</button>
+    </div>
+
+    <!-- Champ de recherche -->
+    <input type="text" id="fileInput" class="form-control" placeholder="Rechercher un fichier...">
+
+    <!-- Zone pour afficher le nombre de résultats -->
+    <div id="resultCount"></div>
+
+    <!-- Liste de fichiers affichée -->
+    <ul id="fileList" class="file-list"></ul>
+
+    <script>
+        const files = [
+            { id: '1iCakaXwRqG9eQlNQmPTKRZXeooiScnYl', name: 'Aïoli de lotte', type: 'Poissons' },
+            { id: '1GsZ1RXAMjOmaGtAA24AFMUiWOWA-n0ad', name: 'Ananas givré', type: 'Desserts' },
+            { id: '1ktOn5I7qcorzDXW-GKnuzGRMuaFJxT_o', name: 'Aubergines braisées au porc haché', type: 'Porc' },
+            { id: '1stLDHSpsiP5CpPXQ2XXltr7-2n5f0qpR', name: 'Aubergines confites au paprika fumé', type: 'Légumes' },
+            { id: '1K8YC8gdjec8aEQ8Ho3DkBXbGVlnL9JYW', name: 'Babka à la crème de marrons, poire et noisettes', type: 'Desserts' },
+            // Ajoutez d'autres éléments ici
+        ];
+
+        const fileInput = document.getElementById("fileInput");
+        const fileList = document.getElementById("fileList");
+        const resultCount = document.getElementById("resultCount");
+
+        document.querySelectorAll('.btn-category').forEach(button => {
+            button.addEventListener('click', () => {
+                const selectedType = button.getAttribute('data-type');
+                const query = fileInput.value.toLowerCase();
+                displayFiles(selectedType, query);
+            });
+        });
+
+        fileInput.addEventListener("input", function () {
+            const query = this.value.toLowerCase();
+            const selectedType = document.querySelector('.btn-category.active')?.getAttribute('data-type') || 'all';
+            displayFiles(selectedType, query);
+        });
+
+        function displayFiles(type, query) {
+            const filteredFiles = files.filter(file => {
+                const matchType = type === 'all' || file.type === type;
+                const matchName = file.name.toLowerCase().includes(query);
+                return matchType && matchName;
+            });
+
+            fileList.innerHTML = "";
+            if (filteredFiles.length > 0) {
+                filteredFiles.forEach(file => {
+                    const li = document.createElement("li");
+                    li.textContent = file.name;
+                    li.addEventListener("click", () => {
+                        window.open(`https://drive.google.com/open?id=${file.id}`, "_blank");
+                    });
+                    fileList.appendChild(li);
+                });
+            } else {
+                fileList.innerHTML = "<li>Aucun fichier trouvé</li>";
+            }
+
+            resultCount.textContent = `Nombre de résultats : ${filteredFiles.length}`;
+        }
+
+        // Affichage initial
+        displayFiles('all', '');
+    </script>
+
+</body>
+
+</html>
